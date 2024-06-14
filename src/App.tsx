@@ -14,10 +14,18 @@ function App() {
   const modalRef = useRef<HTMLDivElement>(null);
   const [data, setData] = useState<APIResponse | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [userInput, setUserInput] = useState("");
 
   const fetchData = async () => {
-    // Ideally you should handle POST here to the AI endpoint
-    const response = await fetch("./response.json");
+    const response = await fetch("http://127.0.0.1:8000/claude", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ 
+        prompt: userInput,
+        variables: [] }) // Use userInput here
+    });
     const data = await response.json();
     setData(data);
     setShowModal(true);
@@ -33,7 +41,8 @@ function App() {
             Prompt
           </label>
           <textarea
-            value={data?.original_prompt || ""}
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
             className="h-[640px] border rounded shadow-lg overflow-y-scroll p-3 mb-4 resize-none"
           />
           <button
@@ -48,7 +57,7 @@ function App() {
             Response
           </label>
           <textarea
-            value={`Email Response Prompt Content`}
+            value={``}
             className="h-[696px] border rounded shadow-lg overflow-y-scroll p-3 mb-4 resize-none"
           />
         </div>
